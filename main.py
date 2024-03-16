@@ -1,4 +1,4 @@
-import os
+import time
 from openai import OpenAI
 import re
 from dotenv import load_dotenv
@@ -25,11 +25,30 @@ while(True):
         "content": user_input
     }]
 
+
+    start = time.time()
+
     chat_completion = client.chat.completions.create (
         model ="gpt-3.5-turbo",
         messages = system_prompt + user_prompt, 
-        temperature = 0
+        temperature = 0,
+        stream = True
     )
 
-    response = chat_completion.choices[0].message.content
-    print(f"Your text: \n{response}")
+    piece_list = []
+    message_list = []
+
+    
+    # response = chat_completion.choices[0].message.content
+    response = chat_completion
+
+    for piece in response:
+        piece_time = time.time() - start
+        piece_list.append(piece)
+        list_message = piece.choices[0].delta.content
+        message_list.append(list_message)
+        print(f"Piece after {piece_time:.2f} seconds: {list_message}")
+
+
+
+    # print(f"Your text: \n{response}")
